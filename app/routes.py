@@ -11,10 +11,10 @@ books = [
     Book(2, "Book2", "Book2 description"),
     Book(3, "Book3", "Book3 description")
 ]
-book_bp = Blueprint("book", __name__, url_prefix="/book")
+books_bp = Blueprint("book", __name__, url_prefix="/book")
 
 
-@book_bp.route('', methods=['GET'])
+@books_bp.route('', methods=['GET'])
 def get_all_books():
     """converts a list of objects into a list of dictionaries"""
     result = []
@@ -25,7 +25,7 @@ def get_all_books():
         result.append(item_dict)
     return jsonify(result), 200
 
-@book_bp.route('/<book_id>', methods=['GET'])
+@books_bp.route('/<book_id>', methods=['GET'])
 def get_one_book(book_id):
     
     try:
