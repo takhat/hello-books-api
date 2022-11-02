@@ -1,5 +1,5 @@
 from os import abort
-from flask import Blueprint, jsonify, make_response, request
+from flask import Blueprint, jsonify, make_response, request, abort
 from app import db
 from app.models.book import Book
 '''
@@ -18,8 +18,11 @@ books = [
 books_bp = Blueprint("book", __name__, url_prefix="/books")
 @books_bp.route("", methods=["GET"])
 def read_all_books():
-
-    books = Book.query.all()
+    title_query_val = request.args.get("title")
+    if title_query_val is not None:
+        books = Book.query.filter_by(title=title_query_val)
+    else:
+        books = Book.query.all()
     books_response = []
     for book in books:
         books_response.append({
@@ -32,26 +35,24 @@ def read_all_books():
 @books_bp.route("", methods=["POST"])
 def create_book():
         request_body = request.get_json()
-        if "title" not in request_body:
-            return make_response("invalid request", 400)
         new_book = Book(
             title = request_body["title"],
             description = request_body["description"]
         )
         db.session.add(new_book)
         db.session.commit()
-        return f"Book {new_book.title} created with id: {new_book.id}", 201
+        return make_response(f"Book {new_book.title} created with id: {new_book.id}", 201)
 
 def validate_book(book_id):
     try:
         book_id = int(book_id)
     except:
-        return(jsonify({"message":f"book {book_id} invalid"}, 400))
+        abort(make_response({"message":f"book {book_id} invalid"}, 400))
 
     book = Book.query.get(book_id)
 
     if not book:
-        return(jsonify({"message":f"book {book_id} not found"}, 404))
+        abort(make_response({"message":f"book {book_id} not found"}, 404))
 
     return book
 
@@ -75,7 +76,7 @@ def update_book(book_id):
 
     db.session.commit()
 
-    return jsonify(f"book # {book.id} updated"), 200
+    return make_response(f"book # {book.id} updated"), 200
 
 @books_bp.route("/<book_id>", methods=["DELETE"])
 def delete_book(book_id):
@@ -83,7 +84,7 @@ def delete_book(book_id):
     book = validate_book(book_id)
     db.session.delete(book)
     db.session.commit()
-    return jsonify(f"book # {book.id} deleted"), 200
+    return make_response(f"book # {book.id} deleted"), 200
 
 
 
