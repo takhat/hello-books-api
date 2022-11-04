@@ -2,6 +2,7 @@ import pytest
 from app import create_app
 from app import db
 from flask.signals import request_finished
+from app.models.book import Book
 
 @pytest.fixture
 def app():
@@ -33,7 +34,7 @@ def two_saved_books(app):
     #Arrange
     ocean_book = Book(title="Ocean Book", description = "water 4 ever")
 
-    mountain_book = Book(title="Mountain Book", descritpion="i luv 2 climb rocks")
+    mountain_book = Book(title="Mountain Book", description="i luv 2 climb rocks")
 
     db.session.add_all([ocean_book, mountain_book])
     db.session.commit()
