@@ -20,4 +20,15 @@ def test_get_one_book_by_id(client, two_saved_books):
         "title": "Ocean Book",
         "description": "water 4 ever"
     }
+#create one book
+def test_create_one_book(client):
+    # Act
+    response = client.post("/books", json={
+        "title": "New Book",
+        "description": "The Best!"
+    })
+    response_body = response.get_json()
 
+    # Assert
+    assert response.status_code == 201
+    assert response_body == "Book New Book successfully created with id: 1"
