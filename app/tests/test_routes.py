@@ -8,7 +8,13 @@ def test_get_all_books_with_empty_db(client):
     assert response.status_code == 200
     assert response_body == []
 
+# get all books and return no records
+def test_get_one_book_with_empty_db_returns_404(client):
+    response = client.get('/books/1')
+    response_body = response.get_json()
 
+    assert response.status_code == 404
+    assert response_body == {'message': "book 1 not found"}
 #get one book by id
 
 def test_get_one_book_by_id(client, two_saved_books):
